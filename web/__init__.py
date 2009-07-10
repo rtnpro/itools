@@ -22,7 +22,7 @@ from context import select_language
 from context import WebLogger
 from exceptions import FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
-from resources import Resource, RootResource
+from resources import Resource, Root, VirtualRoot
 from server import WebServer
 from views import BaseView, BaseForm, STLView, STLForm
 
@@ -37,7 +37,8 @@ __all__ = [
     'select_language',
     # Model
     'Resource',
-    'RootResource',
+    'VirtualRoot',
+    'Root',
     # View-Controller
     'BaseView',
     'BaseForm',
