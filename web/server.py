@@ -548,6 +548,9 @@ class PUT(RequestMethod):
         """The resource is not locked, the request must have a correct
            "If-Unmodified-Since" header.
         """
+        if context.get_header('content-range') is not None:
+            raise NotImplemented
+
         if_unmodified_since = context.get_header('If-Unmodified-Since')
         if if_unmodified_since is None:
             raise Conflict
