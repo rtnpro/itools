@@ -30,7 +30,7 @@ from itools.core import freeze, lazy, local_tz, utc
 from itools.datatypes import String
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
-from itools.http import HTTPMessage
+from itools.http import HTTPContext
 from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.uri import decode_query, get_reference, Path
@@ -39,7 +39,7 @@ from messages import ERROR
 
 
 
-class Context(HTTPMessage):
+class Context(HTTPContext):
 
     user = None
     resource = None
@@ -47,7 +47,7 @@ class Context(HTTPMessage):
 
 
     def __init__(self, soup_message, path):
-        HTTPMessage.__init__(self, soup_message, path)
+        HTTPContext.__init__(self, soup_message, path)
 
         # Set 'web_path' and 'web_view_name'
         # Split the path into path and method ("a/b/c/;view")

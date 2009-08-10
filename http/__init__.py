@@ -16,6 +16,7 @@
 
 # Import from itools
 from app import Application, HTTPResource
+from context import HTTPContext
 from entities import Entity
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
@@ -24,7 +25,6 @@ from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from headers import get_type
 from headers import Cookie, SetCookieDataType
-from message import HTTPMessage
 from server import HTTPServer
 from soup import SoupMessage
 from utils import set_response
@@ -33,7 +33,7 @@ from utils import set_response
 __all__ = [
     'SoupMessage',
     'HTTPServer',
-    'HTTPMessage',
+    'HTTPContext',
     'HTTPResource',
     'Application',
     'Entity',
