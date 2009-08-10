@@ -19,7 +19,6 @@
 
 # Import from the Standard Library
 from base64 import decodestring
-from binascii import Error as BinasciiError
 from copy import copy
 from types import FunctionType, MethodType
 from urllib import unquote
@@ -65,43 +64,8 @@ class WebServer(HTTPServer):
         context.server = self
         context.root = self.root
 
-        # (2) The authenticated user
-        self.find_user(context)
-
-        # (3) The Site Root
-        self.find_site_root(context)
-
-        # (4) Keep the context
+        # (3) Keep the context
         set_context(context)
-
-
-    def find_user(self, context):
-        context.user = None
-
-        # (1) Read the id/auth cookie
-        cookie = context.get_cookie('__ac')
-        if cookie is None:
-            return
-
-        cookie = unquote(cookie)
-        # When we send:
-        # Set-Cookie: __ac="deleted"; expires=Wed, 31-Dec-97 23:59:59 GMT;
-        #             path=/; max-age="0"
-        # to FF4, it don't delete the cookie, but continue to send
-        # __ac="deleted" (not base64 encoded)
-        try:
-            cookie = decodestring(cookie)
-        except BinasciiError:
-            return
-        username, password = cookie.split(':', 1)
-
-        if username is None or password is None:
-            return
-
-        # (2) Get the user resource and authenticate
-        user = context.root.get_user(username)
-        if user is not None and user.authenticate(password):
-            context.user = user
 
 
     ########################################################################
@@ -349,7 +313,6 @@ class RequestMethod(object):
         # (1) Find out the requested resource and view
         try:
             # The requested resource and view
-            cls.find_resource(server, context)
             cls.find_view(server, context)
             # Access Control
             cls.check_access(server, context)

@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from binascii import Error as BinasciiError
+
 # Import from itools
 from itools.handlers import BaseDatabase
 from itools.http import Application
@@ -47,3 +50,33 @@ class WebApplication(Application):
         path.startswith_slash = False
 
         return root.get_resource(path, soft=True)
+
+
+    def get_user(self, context):
+        # Credentials
+        cookie = context.get_cookie('__ac')
+        if cookie is None:
+            return None
+
+        cookie = unquote(cookie)
+        # When we send:
+        # Set-Cookie: __ac="deleted"; expires=Wed, 31-Dec-97 23:59:59 GMT;
+        #             path=/; max-age="0"
+        # to FF4, it don't delete the cookie, but continue to send
+        # __ac="deleted" (not base64 encoded)
+        try:
+            cookie = decodestring(cookie)
+        except BinasciiError:
+            return
+        username, password = cookie.split(':', 1)
+
+        if username is None or password is None:
+            return None
+
+        # Authentication
+        user = context.root.get_user(username)
+        if user is not None and user.authenticate(password):
+            return user
+
+        return None
+
