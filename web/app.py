@@ -15,7 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from base64 import decodestring
 from binascii import Error as BinasciiError
+from copy import copy
+from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
