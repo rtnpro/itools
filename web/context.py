@@ -49,20 +49,6 @@ class Context(HTTPContext):
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
 
-        # Set 'web_path' and 'web_view_name'
-        # Split the path into path and method ("a/b/c/;view")
-        path = self.path
-        name = path.get_name()
-        if name and name[0] == ';':
-            self.web_path = path[:-1]
-            self.web_view_name = name[1:]
-        else:
-            self.web_path = path
-            self.web_view_name = None
-
-        # Cookies
-        self.cookies = {}
-
         # Media files (CSS, javascript)
         # Set the list of needed resources. The method we are going to
         # call may need external resources to be rendered properly, for
