@@ -21,7 +21,7 @@ from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.http import Application, FOUND, NOT_FOUND
+from itools.http import Application, NOT_FOUND
 
 
 
@@ -34,6 +34,9 @@ class WebApplication(Application):
         self.root = root
 
 
+    #######################################################################
+    # Resource
+    #######################################################################
     def find_host(self, context):
         """This method may be overriden to support virtual hosting.
         """
@@ -68,14 +71,15 @@ class WebApplication(Application):
         if context.view is None:
             return NOT_FOUND
 
-        return FOUND
 
-
-    def find_user(self, context):
+    #######################################################################
+    # Authorization
+    #######################################################################
+    def get_user(self, context):
         # Credentials
         cookie = context.get_cookie('__ac')
         if cookie is None:
-            return
+            return None
 
         cookie = unquote(cookie)
         # When we send:
@@ -89,10 +93,21 @@ class WebApplication(Application):
             return
         username, password = cookie.split(':', 1)
         if username is None or password is None:
-            return
+            return None
 
         # Authentication
         user = self.root.find_user(username)
         if user is not None and user.authenticate(password):
-            context.user = user
+            return user
 
+
+    def find_user(self, context):
+        # Authentication
+        user = self.get_user(context)
+        context.user = user
+
+        # Access Control
+        resource = context.resource
+        ac = resource.get_access_control()
+        if not ac.is_access_allowed(user, resource, context.view):
+            return FORBIDDEN if user else UNAUTHORIZED
