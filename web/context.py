@@ -255,38 +255,6 @@ class Context(HTTPContext):
         return remote_ip.split(',', 1)[0].strip() if remote_ip else None
 
 
-###########################################################################
-# One context per thread
-###########################################################################
-contexts = {}
-contexts_lock = allocate_lock()
-
-
-def set_context(context):
-    ident = get_ident()
-
-    contexts_lock.acquire()
-    try:
-        contexts[ident] = context
-    finally:
-        contexts_lock.release()
-
-
-def get_context():
-    return contexts.get(get_ident())
-
-
-def del_context():
-    ident = get_ident()
-
-    contexts_lock.acquire()
-    try:
-        del contexts[ident]
-    finally:
-        contexts_lock.release()
-
-
-
 #######################################################################
 # Internationalization
 #######################################################################

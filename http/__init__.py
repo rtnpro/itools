@@ -17,7 +17,7 @@
 # Import from itools
 from app import Application, HTTPResource
 from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
-from context import HTTPContext
+from context import HTTPContext, get_context
 from entities import Entity
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
@@ -40,6 +40,7 @@ __all__ = [
     'Entity',
     'get_type',
     'set_response',
+    'get_context',
     # Cookies
     'Cookie',
     'SetCookieDataType',

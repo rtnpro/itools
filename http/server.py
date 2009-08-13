@@ -21,7 +21,7 @@ from datetime import timedelta
 # Import from itools
 from app import Application
 from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
-from context import HTTPContext
+from context import HTTPContext, set_context
 from exceptions import HTTPError
 from soup import SoupServer
 from itools.log import Logger, register_logger, log_info
@@ -94,15 +94,18 @@ class HTTPServer(SoupServer):
             self.log_error()
             soup_message.set_status(500)
             soup_message.set_body('text/plain', '500 Internal Server Error')
+        finally:
+            set_context(None)
 
 
     def _path_callback(self, soup_message, path):
+        # Make context
         context = self.context_class(soup_message, path)
-        # Attach the application to the context
-        app = self.app
+        set_context(context)
         context.app = self.app
 
         # 501 Not Implemented
+        app = self.app
         if context.method not in app.known_methods:
             return context.set_response(501)
 
