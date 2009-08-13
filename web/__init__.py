@@ -17,6 +17,7 @@
 
 # Import from itools
 from access import AccessControl
+from app import WebApplication
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
@@ -27,9 +28,10 @@ from server import WebServer
 from views import BaseView, BaseForm, STLView, STLForm
 
 __all__ = [
-    'AccessControl',
     'WebServer',
     'WebLogger',
+    'WebApplication',
+    'AccessControl',
     # Context
     'Context',
     'set_context',
