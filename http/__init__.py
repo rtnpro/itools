@@ -26,6 +26,7 @@ from headers import get_type
 from headers import Cookie, SetCookieDataType
 from server import HTTPServer
 from soup import SoupMessage
+from static import Static
 from utils import set_response
 
 
@@ -40,6 +41,7 @@ __all__ = [
     # Cookies
     'Cookie',
     'SetCookieDataType',
+    'Static',
     # Exceptions
     'BadGateway',
     'BadRequest',
