@@ -15,8 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from app import Application, HTTPResource
-from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
 from context import HTTPContext, get_context
 from entities import Entity
 from exceptions import HTTPError, ClientError, ServerError
@@ -35,8 +33,6 @@ __all__ = [
     'SoupMessage',
     'HTTPServer',
     'HTTPContext',
-    'HTTPResource',
-    'Application',
     'Entity',
     'get_type',
     'set_response',
@@ -44,13 +40,6 @@ __all__ = [
     # Cookies
     'Cookie',
     'SetCookieDataType',
-    # Values returned by 'Application.find_resource'
-    'MOVED',
-    'REDIRECT',
-    'UNAUTHORIZED',
-    'FORBIDDEN',
-    'NOT_FOUND',
-    'GONE',
     # Exceptions
     'BadGateway',
     'BadRequest',
