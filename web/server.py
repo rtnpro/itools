@@ -43,11 +43,8 @@ class WebServer(HTTPServer):
     event_log = None
 
 
-    def __init__(self, root, access_log=None, event_log=None):
+    def __init__(self, access_log=None, event_log=None):
         super(WebServer, self).__init__(access_log)
-        # The application's root
-        self.root = root
-        # Logging
         register_logger(WebLogger(log_file=event_log), 'itools.web')
 
 
@@ -57,7 +54,6 @@ class WebServer(HTTPServer):
     def init_context(self, context):
         # (1) The server, the data root and the authenticated user
         context.server = self
-        context.root = self.root
 
 
     ########################################################################
