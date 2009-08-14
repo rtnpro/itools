@@ -18,9 +18,7 @@
 # Import from itools
 from access import AccessControl
 from app import WebApplication
-from context import Context
-from context import select_language
-from context import WebLogger
+from context import Context, WebLogger
 from exceptions import FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
@@ -34,7 +32,6 @@ __all__ = [
     'AccessControl',
     # Context
     'Context',
-    'select_language',
     # Model
     'Resource',
     'VirtualRoot',

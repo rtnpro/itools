@@ -19,8 +19,9 @@ from time import strftime
 from datetime import timedelta
 
 # Import from itools
+from itools.i18n import init_language_selector
 from itools.uri import Path
-from context import HTTPContext, set_context, set_response
+from context import HTTPContext, set_context, set_response, select_language
 from exceptions import HTTPError
 from soup import SoupServer
 from itools.log import Logger, register_logger, log_info
@@ -53,7 +54,15 @@ class HTTPServer(SoupServer):
 
 
     def listen(self, address, port):
+        # Language negotiation
+        init_language_selector(select_language)
+
+        # Add handlers
         SoupServer.listen(self, address, port)
+        self.add_handler('/', self.path_callback)
+        self.add_handler('*', self.star_callback)
+
+        # Run
         address = address if address is not None else '*'
         print 'Listen %s:%d' % (address, port)
 

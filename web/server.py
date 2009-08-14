@@ -56,16 +56,6 @@ class WebServer(HTTPServer):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-    def listen(self, address, port):
-        # Language negotiation
-        init_language_selector(select_language)
-
-        # Add handlers
-        HTTPServer.listen(self, address, port)
-        self.add_handler('/', self.path_callback)
-        self.add_handler('*', self.star_callback)
-
-
     def path_callback(self, soup_message, path):
         # (1) Get the class that will handle the request
         method_name = soup_message.get_method()
