@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from context import HTTPContext, get_context
+from context import HTTPContext, get_context, set_context
 from entities import Entity
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
@@ -38,10 +38,13 @@ __all__ = [
     'get_type',
     'set_response',
     'get_context',
+    'set_context',
+    'Static',
     # Cookies
     'Cookie',
     'SetCookieDataType',
-    'Static',
+    # Low-level soup interface
+    'SoupMessage',
     # Exceptions
     'BadGateway',
     'BadRequest',
