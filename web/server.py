@@ -29,14 +29,14 @@ from itools.i18n import init_language_selector
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
 from app import WebApplication
-from context import Context, WebLogger, select_language
+from context import WebContext, WebLogger
 from exceptions import FormError
 from views import BaseView
 
 
 class WebServer(HTTPServer):
 
-    context_class = Context
+    context_class = WebContext
     event_log = None
 
 
@@ -76,7 +76,7 @@ class WebServer(HTTPServer):
         # XXX This try/except can be removed if its body contains no bug
         # anymore
         try:
-            context = Context(soup_message, path)
+            context = WebContext(soup_message, path)
             self.init_context(context)
         except Exception:
             log_error('Internal error', domain='itools.web')

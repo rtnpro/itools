@@ -39,7 +39,7 @@ from messages import ERROR
 
 
 
-class Context(HTTPContext):
+class WebContext(HTTPContext):
 
     user = None
     resource = None
