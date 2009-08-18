@@ -22,11 +22,9 @@ from context import WebContext, WebLogger
 from exceptions import FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
-from server import WebServer
 from views import BaseView, BaseForm, STLView, STLForm
 
 __all__ = [
-    'WebServer',
     'WebApplication',
     'AccessControl',
     'WebContext',
