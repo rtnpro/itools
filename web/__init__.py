@@ -27,10 +27,10 @@ from views import BaseView, BaseForm, STLView, STLForm
 
 __all__ = [
     'WebServer',
-    'WebLogger',
     'WebApplication',
     'AccessControl',
     'WebContext',
+    'WebLogger',
     # Model
     'Resource',
     'VirtualRoot',
