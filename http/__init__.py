@@ -25,8 +25,7 @@ from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from headers import get_type
 from headers import Cookie, SetCookieDataType
 from server import HTTPServer
-from soup import SoupMessage
-from static import Static
+from mounts import HTTPMount, StaticMount
 from utils import set_response
 
 
@@ -39,12 +38,12 @@ __all__ = [
     'set_response',
     'get_context',
     'set_context',
-    'Static',
     # Cookies
     'Cookie',
     'SetCookieDataType',
-    # Low-level soup interface
-    'SoupMessage',
+    # Mounts
+    'HTTPMount',
+    'StaticMount',
     # Exceptions
     'BadGateway',
     'BadRequest',

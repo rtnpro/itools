@@ -21,18 +21,13 @@ from datetime import timedelta
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.uri import Path
-from context import HTTPContext, set_context, set_response, select_language
-from exceptions import HTTPError
+from context import set_context, set_response, select_language
 from soup import SoupServer
 from itools.log import Logger, register_logger, log_info
 
 
 
 class HTTPServer(SoupServer):
-
-    # The default application says "hello"
-    context_class = HTTPContext
-
 
     def __init__(self, access_log=None):
         SoupServer.__init__(self)
@@ -82,7 +77,7 @@ class HTTPServer(SoupServer):
 
         aux = self.mounts
         for name in path:
-            target, aux = aux.setdefault(name, [None, {}])
+            aux = aux[1].setdefault(name, [None, {}])
         aux[0] = mount
 
 
@@ -127,25 +122,25 @@ class HTTPServer(SoupServer):
 
 
     def path_callback(self, soup_message, path):
+        # 501 Not Implemented
+        if soup_message.get_method() not in self.known_methods:
+            return set_response(soup_message, 501)
+
+        # Mount
+        path = Path(path)
+        mount = self.get_mount(path)
+        if mount is None:
+            return set_response(soup_message, 404)
+
         # New context
         try:
-            context = self.context_class(soup_message, path)
+            context = mount.get_context(soup_message, path)
         except Exception:
             log_error('Failed to make context instance', domain='itools.http')
             return set_response(soup_message, 500)
 
-        # 501 Not Implemented
-        if context.method not in self.known_methods:
-            return set_response(soup_message, 501)
-
-        # Mount
-        mount = self.get_mount(context.path)
-        if mount is None:
-            return set_response(soup_message, 404)
-
         # Handle request
         set_context(context)
-        context.mount = mount
         try:
             mount.handle_request(context)
         except Exception:
