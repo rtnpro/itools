@@ -19,8 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from binascii import Error as BinasciiError
 from datetime import datetime
-from thread import get_ident, allocate_lock
 
 # Import from pytz
 from pytz import timezone
@@ -30,6 +30,7 @@ from itools.core import freeze, lazy, local_tz, utc
 from itools.datatypes import String
 from itools.http import get_type, Entity
 from itools.http import HTTPContext, get_context
+from itools.http import Unauthorized, Forbidden, NotFound
 from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.uri import get_reference
@@ -40,13 +41,18 @@ from messages import ERROR
 
 class WebContext(HTTPContext):
 
-    user = None
-    resource = None
-    status = None
-
-
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
+
+        # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
+        path = self.path
+        name = path.get_name()
+        if name and name[0] == ';':
+            self.resource_path = path[:-1]
+            self.view_name = name[1:]
+        else:
+            self.resource_path = path
+            self.view_name = None
 
         # Media files (CSS, javascript)
         # Set the list of needed resources. The method we are going to
@@ -90,8 +96,71 @@ class WebContext(HTTPContext):
         """
         # FIXME This method should give an error if the given resource is
         # not within the site root.
-        site_root = self.site_root
-        return '/%s' % site_root.get_pathto(resource)
+        host = self.host
+        return '/%s' % host.get_pathto(resource)
+
+
+    #######################################################################
+    # Lazy load
+    #######################################################################
+    def load_accept_language(self):
+        accept_language = self.get_header('Accept-Language') or ''
+        return AcceptLanguageType.decode(accept_language)
+
+
+    def load_host(self):
+        return self.mount.get_host(self)
+
+
+    def load_resource(self):
+        resource = self.mount.get_resource(self.resource_path, soft=True)
+        if resource is None:
+            raise NotFound
+        return resource
+
+
+    def load_view(self):
+        return self.resource.get_view(self.view_name, self.query)
+
+
+    def get_credentials(self):
+        # Credentials
+        cookie = self.get_cookie('__ac')
+        if cookie is None:
+            return None
+
+        cookie = unquote(cookie)
+        # When we send:
+        # Set-Cookie: __ac="deleted"; expires=Wed, 31-Dec-97 23:59:59 GMT;
+        #             path=/; max-age="0"
+        # to FF4, it don't delete the cookie, but continue to send
+        # __ac="deleted" (not base64 encoded)
+        try:
+            cookie = decodestring(cookie)
+        except BinasciiError:
+            return
+        username, password = cookie.split(':', 1)
+        if username is None or password is None:
+            return None
+
+        return username, password
+
+
+    def load_user(self):
+        credentials = self.get_credentials()
+        if credentials is None:
+            return None
+        mount = self.mount
+        return mount.get_user(credentials)
+
+
+    def load_access(self):
+        resource = self.resource
+        ac = resource.get_access_control()
+        if not ac.is_access_allowed(self, resource, self.view):
+            if self.user:
+                raise Forbidden
+            raise Unauthorized
 
 
     #######################################################################
