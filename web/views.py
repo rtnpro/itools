@@ -23,7 +23,7 @@ from itools.core import freeze
 from itools.datatypes import Enumerate
 from itools.gettext import MSG
 from itools.stl import stl
-from itools.uri import decode_query, Reference
+from itools.uri import decode_query, get_reference, Reference
 from exceptions import FormError
 from messages import ERROR
 
@@ -112,7 +112,7 @@ class BaseView(object):
         Search engines will keep this sole URI when crawling different
         combinations of this view.
         """
-        uri = deepcopy(context.uri)
+        uri = get_reference(context.uri)
         query = uri.query
         # Remove the view name if default
         view_name = context.view_name
