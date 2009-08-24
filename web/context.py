@@ -42,6 +42,8 @@ from messages import ERROR
 
 class WebContext(HTTPContext):
 
+    status = None
+
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
 
