@@ -22,6 +22,7 @@ from context import WebContext, WebLogger
 from exceptions import FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
+from ui import UI
 from views import BaseView, BaseForm, STLView, STLForm
 
 __all__ = [
@@ -29,6 +30,7 @@ __all__ = [
     'AccessControl',
     'WebContext',
     'WebLogger',
+    'UI',
     # Model
     'Resource',
     'VirtualRoot',
