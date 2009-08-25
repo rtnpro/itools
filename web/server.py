@@ -21,8 +21,7 @@
 from warnings import warn
 
 # Import from itools
-from itools.http import ClientError, NotModified, Conflict
-from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
+from itools.http import Redirection, ClientError, ServerError
 from itools.log import log_error
 from itools.uri import Reference
 from context import WebContext
@@ -46,7 +45,7 @@ def find_view_by_method(server, context):
     view_name = "http_%s" % method_name.lower()
     context.view = context.resource.get_view(view_name)
     if context.view is None:
-        raise NotImplemented, 'method "%s" is not implemented' % method_name
+        raise ServerError(501)
 
 
 class RequestMethod(object):
@@ -122,19 +121,16 @@ class RequestMethod(object):
             cls.check_cache(server, context)
             # Check pre-conditions
             cls.check_conditions(server, context)
-        except Unauthorized, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
         except ClientError, error:
-            status = error.code
+            status = error.status
             context.status = status
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
-        except NotModified:
-            context.http_not_modified()
-            return
+        except Redirection:
+            response.set_status(error.status)
+            response.set_header('content-length', 0)
+            response.set_body(None)
+            return response
 
         # (2) Always deserialize the query
         resource = context.resource
@@ -203,7 +199,7 @@ class GET(RequestMethod):
 
         # Cache: check modification time
         if mtime <= if_modified_since:
-            raise NotModified
+            raise Redirection(304)
 
 
     @classmethod
@@ -247,14 +243,14 @@ class PUT(RequestMethod):
            "If-Unmodified-Since" header.
         """
         if context.get_header('content-range') is not None:
-            raise NotImplemented
+            raise ServerError(501)
 
         if_unmodified_since = context.get_header('If-Unmodified-Since')
         if if_unmodified_since is None:
-            raise Conflict
+            raise ClientError(409)
         mtime = context.resource.get_mtime().replace(microsecond=0)
         if mtime > if_unmodified_since:
-            raise Conflict
+            raise ClientError(409)
 
 
     @classmethod
@@ -292,7 +288,7 @@ class DELETE(RequestMethod):
         parent = resource.parent
         # The root cannot delete itself
         if parent is None:
-            raise MethodNotAllowed
+            raise ClientError(405)
 
 
     @classmethod

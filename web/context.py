@@ -30,8 +30,7 @@ from pytz import timezone
 from itools.core import freeze, lazy, local_tz, utc
 from itools.datatypes import String
 from itools.http import get_type, Entity
-from itools.http import HTTPContext, get_context
-from itools.http import Unauthorized, Forbidden, NotFound
+from itools.http import HTTPContext, ClientError, get_context
 from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger, log_warning
 from itools.uri import get_reference
@@ -118,7 +117,7 @@ class WebContext(HTTPContext):
     def load_resource(self):
         resource = self.mount.get_resource(self.resource_path, soft=True)
         if resource is None:
-            raise NotFound
+            raise ClientError(404)
         return resource
 
 
@@ -159,8 +158,8 @@ class WebContext(HTTPContext):
         ac = resource.get_access_control()
         if not ac.is_access_allowed(self, resource, self.view):
             if self.user:
-                raise Forbidden
-            raise Unauthorized
+                raise ClientError(403)
+            raise ClientError(401)
 
 
     #######################################################################
