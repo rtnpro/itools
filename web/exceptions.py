@@ -19,6 +19,17 @@ from itools.gettext import MSG
 from messages import ERROR
 
 
+DO_NOT_CHANGE = 'do not change'
+
+
+
+class InternalRedirect(StandardError):
+
+    def __init__(self, resource=DO_NOT_CHANGE, view=DO_NOT_CHANGE):
+        self.resource = resource
+        self.view = view
+
+
 
 class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
