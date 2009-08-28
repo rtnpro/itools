@@ -421,17 +421,6 @@ class GitDatabase(ROGitDatabase):
         pass
 
 
-    def _before_commit(self):
-        """This method is called before 'save_changes', and gives a chance
-        to the database to check for preconditions, if an error occurs here
-        the transaction will be aborted.
-
-        The value returned by this method will be passed to '_save_changes',
-        so it can be used to pre-calculate whatever data is needed.
-        """
-        return None, None, None, [], []
-
-
     def _save_changes(self, data):
         # Synchronize eventually the handlers and the filesystem
         for key in self.added:
@@ -478,18 +467,9 @@ class GitDatabase(ROGitDatabase):
         catalog.save_changes()
 
 
-    def save_changes(self):
+    def save_changes(self, data=None):
         if not self.has_changed:
             return
-
-        # Prepare for commit, do here the most you can, if something fails
-        # the transaction will be aborted
-        try:
-            data = self._before_commit()
-        except:
-            self._abort_changes()
-            self._cleanup()
-            raise
 
         # Commit
         try:
