@@ -78,7 +78,7 @@ class CatalogAware(object):
 
 
 
-class Doc(object):
+class SearchDocument(object):
 
     def __init__(self, xdoc, fields, metadata):
         self._xdoc = xdoc
@@ -184,7 +184,6 @@ class SearchResults(object):
         By default all the documents are returned.
         """
         enquire = self._enquire
-        fields = self._catalog._fields
         metadata = self._catalog._metadata
 
         # sort_by != None
@@ -210,7 +209,9 @@ class SearchResults(object):
             size = self._max
 
         # Construction of the results
-        results = [ Doc(x.document, fields, metadata)
+        fields = self._catalog._fields
+        cls = self._catalog.search_document
+        results = [ cls(x.document, fields, metadata)
                     for x in enquire.get_mset(start, size) ]
 
         # sort_by=None/reverse=True
@@ -222,6 +223,9 @@ class SearchResults(object):
 
 
 class Catalog(object):
+
+    search_document = SearchDocument
+
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
         # Load the database
