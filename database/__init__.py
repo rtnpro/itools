@@ -17,6 +17,7 @@
 
 # Import from itools
 from catalog import Catalog, make_catalog, CatalogAware
+from catalog import SearchResults
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from registry import get_register_fields, register_field
@@ -36,6 +37,7 @@ __all__ = [
     'make_catalog',
     'Catalog',
     'CatalogAware',
+    'SearchResults',
     # Queries
     'RangeQuery',
     'PhraseQuery',

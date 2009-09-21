@@ -153,7 +153,7 @@ class SearchResults(object):
 
         xquery = _get_xquery(catalog, query, **kw)
         query = Query(Query.OP_AND, [self._xquery, xquery])
-        return SearchResults(catalog, query)
+        return catalog.search_results(catalog, query)
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -210,9 +210,9 @@ class SearchResults(object):
 
         # Construction of the results
         fields = self._catalog._fields
-        cls = self._catalog.search_document
-        results = [ cls(x.document, fields, metadata)
-                    for x in enquire.get_mset(start, size) ]
+        results = [
+            SearchDocument(x.document, fields, metadata)
+            for x in enquire.get_mset(start, size) ]
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:
@@ -224,7 +224,7 @@ class SearchResults(object):
 
 class Catalog(object):
 
-    search_document = SearchDocument
+    search_results = SearchResults
 
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
@@ -382,7 +382,7 @@ class Catalog(object):
         """Launch a search in the catalog.
         """
         xquery = _get_xquery(self, query, **kw)
-        return SearchResults(self, xquery)
+        return self.search_results(self, xquery)
 
 
     def get_unique_values(self, name):
@@ -842,4 +842,3 @@ def _get_xquery(catalog, query=None, **kw):
         xqueries.append(query)
 
     return Query(OP_AND, xqueries)
-
