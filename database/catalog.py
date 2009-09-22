@@ -28,6 +28,7 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
+from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery
 
@@ -284,30 +285,36 @@ class Catalog(object):
     def index_document(self, document):
         """Add a new document.
         """
+        # Check the input
+        if not isinstance(document, CatalogAware):
+            raise ValueError, 'the document must be a CatalogAware object'
+
+        # Load local variables
         db = self._db
         metadata = self._metadata
         fields = self._fields
 
-        # Check the input
-        if type(document) is dict:
-            doc_values = document
-        elif isinstance(document, CatalogAware):
-            doc_values = document.get_catalog_values()
-        else:
-            raise ValueError, 'the document must be a CatalogAware object'
-
         # Make the xapian document
+        key_value = None
         metadata_modified = False
         xdoc = Document()
-        for name, value in doc_values.iteritems():
-            field_cls = fields[name]
+        for name in fields:
+            try:
+                value = getattr(document, name, None)
+            except Exception:
+                msg = 'Error indexing "%s" field' % name
+                log_warning(msg, domain='itools.xapian')
+                continue
+            if value is None:
+                continue
 
-            # New field ?
-            if name not in metadata:
+            # Get info
+            field_cls = fields[name]
+            if name in metadata:
+                info = metadata[name]
+            else:
                 info = metadata[name] = self._get_info(field_cls, name)
                 metadata_modified = True
-            else:
-                info = metadata[name]
 
             # XXX This comment is no longer valid, now the key field is
             #     always abspath with field_cls = String
@@ -325,7 +332,7 @@ class Catalog(object):
                 for language, lang_value in value.iteritems():
                     lang_name = name + '_' + language
 
-                    # New field ?
+                    # New field?
                     if lang_name not in metadata:
                         lang_info = self._get_info(field_cls, lang_name)
                         lang_info['from'] = name
@@ -336,11 +343,11 @@ class Catalog(object):
 
                     # The value can be None
                     if lang_value is not None:
-                        # Is stored ?
+                        # Is stored?
                         if 'value' in lang_info:
                             xdoc.add_value(lang_info['value'],
                                            _encode(field_cls, lang_value))
-                        # Is indexed ?
+                        # Is indexed?
                         if 'prefix' in lang_info:
                             # Comment: Index twice
                             _index(xdoc, field_cls, lang_value,
@@ -349,20 +356,20 @@ class Catalog(object):
                                    lang_info['prefix'], language)
             # The value can be None
             elif value is not None:
-                # Is stored ?
+                # Is stored?
                 if 'value' in info:
                     xdoc.add_value(info['value'], _encode(field_cls, value))
-                # Is indexed ?
+                # Is indexed?
                 if 'prefix' in info:
                     # By default language='en'
                     _index(xdoc, field_cls, value, info['prefix'], 'en')
 
         # TODO: Don't store two documents with the same key field!
+        if key_value is None:
+            raise ValueError, 'the "abspath" value is compulsory'
 
-        # Save the doc
+        # Save
         db.add_document(xdoc)
-
-        # Store metadata ?
         if metadata_modified:
             db.set_metadata('metadata', dumps(metadata))
 
