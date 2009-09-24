@@ -121,7 +121,8 @@ class WebContext(HTTPContext):
         return None
 
 
-    def load_host(self):
+    @lazy
+    def host(self):
         return self.get_host(self.hostname)
 
 
@@ -129,14 +130,16 @@ class WebContext(HTTPContext):
         raise NotImplementedError
 
 
-    def load_resource(self):
+    @lazy
+    def resource(self):
         resource = self.get_resource(self.resource_path, soft=True)
         if resource is None:
             raise ClientError(404)
         return resource
 
 
-    def load_view(self):
+    @lazy
+    def view(self):
         return self.resource.get_view(self.view_name, self.query)
 
 
@@ -165,14 +168,16 @@ class WebContext(HTTPContext):
         return None
 
 
-    def load_user(self):
+    @lazy
+    def user(self):
         credentials = self.get_credentials()
         if credentials is None:
             return None
         return self.get_user(credentials)
 
 
-    def load_access(self):
+    @lazy
+    def access(self):
         resource = self.resource
         ac = resource.get_access_control()
         if ac.is_access_allowed(self, resource, self.view):
