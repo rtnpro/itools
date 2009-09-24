@@ -20,3 +20,18 @@ See the table below for the imports to update.
   ----------------------------   ---------------------------
   TODO
 
+
+itools.stl
+==========
+
+(1) The __getattr__ protocol is not supported anymore to lookup in STL
+namespaces.  This feature was rarely used.
+
+
+itools.web
+==========
+
+(1) BaseForm.build_namespace => STLForm.get_namespace
+
+(2) Remove 'before_traverse' and 'after_traverse'
+
