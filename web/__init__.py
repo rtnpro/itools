@@ -24,6 +24,8 @@ from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
 from ui import UI
 from views import BaseView, BaseForm, STLView, STLForm
+from views_fields import ViewField
+
 
 __all__ = [
     'WebApplication',
@@ -40,8 +42,9 @@ __all__ = [
     'BaseForm',
     'STLView',
     'STLForm',
-    # Exceptions
+    # Forms
     'FormError',
+    'ViewField',
     # Messages
     'INFO',
     'ERROR',
