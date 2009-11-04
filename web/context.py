@@ -21,7 +21,6 @@
 # Import from the Standard Library
 from datetime import datetime
 from base64 import decodestring
-from types import GeneratorType
 from urllib import unquote
 
 # Import from pytz
@@ -30,7 +29,7 @@ from pytz import timezone
 # Import from itools
 from itools.core import freeze, lazy, local_tz, utc
 from itools.datatypes import String
-from itools.html import stream_to_str_as_html, xhtml_doctype
+from itools.html import xhtml_doctype
 from itools.http import HTTPContext, ClientError, ServerError, get_context
 from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger, log_warning, log_error
