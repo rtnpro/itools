@@ -20,11 +20,14 @@ from access import AccessControl
 from app import WebApplication
 from context import WebContext, WebLogger
 from exceptions import FormError
+from fields import boolean_field, choice_field, hidden_field, input_field
+from fields import integer_field, multiple_choice_field, text_field
+from fields import textarea_field
+from fields import make_stl_template
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
 from ui import UI
 from views import BaseView, BaseForm, STLView, STLForm
-from views_fields import ViewField
 
 
 __all__ = [
@@ -42,11 +45,21 @@ __all__ = [
     'BaseForm',
     'STLView',
     'STLForm',
-    # Forms
+    # View fields
+    'boolean_field',
+    'choice_field',
+    'hidden_field',
+    'input_field',
+    'integer_field',
+    'multiple_choice_field',
+    'text_field',
+    'textarea_field',
+    # Exceptions
     'FormError',
-    'ViewField',
     # Messages
     'INFO',
     'ERROR',
-    'MSG_MISSING_OR_INVALID'
+    'MSG_MISSING_OR_INVALID',
+    # Utilities
+    'make_stl_template',
     ]
