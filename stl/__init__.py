@@ -16,7 +16,7 @@
 
 # Import from itools
 from stl import STLError, STLFile, STLTemplate, stl
-from stl import rewrite_uris, set_prefix
+from stl import make_stl_template, rewrite_uris, set_prefix
 
 
 __all__ = [
@@ -25,6 +25,7 @@ __all__ = [
     'STLFile',
     'STLTemplate',
     # Helper functions
+    'make_stl_template',
     'rewrite_uris',
     'set_prefix',
     ]

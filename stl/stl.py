@@ -503,6 +503,16 @@ class STLFile(XMLFile):
 # Templates
 ###########################################################################
 
+stl_namespaces = {
+    None: 'http://www.w3.org/1999/xhtml',
+    'stl': 'http://www.hforge.org/xml-namespaces/stl'}
+
+
+def make_stl_template(data):
+    return list(XMLParser(data, stl_namespaces))
+
+
+
 class STLTemplate(thingy):
 
     template = None
