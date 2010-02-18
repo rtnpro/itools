@@ -20,26 +20,29 @@ from datetime import timedelta
 
 # Import from itools
 from itools.i18n import init_language_selector
-from itools.log import log_error, log_warning
+from itools.log import Logger, register_logger
+from itools.log import log_info, log_error, log_warning
 from itools.uri import Path
 from context import set_context, set_response, select_language
 from soup import SoupServer
-from itools.log import Logger, register_logger, log_info
 
 
 
 class HTTPServer(SoupServer):
 
-    def __init__(self, access_log=None):
+    def __init__(self, access_log=None, event_log=None):
         SoupServer.__init__(self)
 
         # Mounts
         self.mounts = [None, {}]
 
-        # The logger
+        # Access log
         logger = AccessLogger(log_file=access_log)
         logger.launch_rotate(timedelta(weeks=3))
         register_logger(logger, 'itools.web_access')
+        # Events log
+        if event_log is not None:
+            register_logger(Logger(log_file=event_log), 'itools.http')
 
 
     def log_access(self, host, request_line, status_code, body_length):
