@@ -61,6 +61,15 @@ class WebContext(HTTPContext):
         # Resource path and view
         self.split_path()
 
+        # Media files (CSS, javascript)
+        # Set the list of needed resources. The method we are going to
+        # call may need external resources to be rendered properly, for
+        # example it could need an style sheet or a javascript file to
+        # be included in the html head (which it can not control). This
+        # attribute lets the interface to add those resources.
+        self.styles = []
+        self.scripts = []
+
 
     def split_path(self):
         # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
@@ -72,15 +81,6 @@ class WebContext(HTTPContext):
         else:
             self.resource_path = path
             self.view_name = None
-
-        # Media files (CSS, javascript)
-        # Set the list of needed resources. The method we are going to
-        # call may need external resources to be rendered properly, for
-        # example it could need an style sheet or a javascript file to
-        # be included in the html head (which it can not control). This
-        # attribute lets the interface to add those resources.
-        self.styles = []
-        self.scripts = []
 
 
     @lazy
@@ -284,7 +284,7 @@ class WebContext(HTTPContext):
         methods = set(methods)
         methods.add('OPTIONS')
         # DELETE is unsupported at the root
-        if obj.path == '/':
+        if self.path == '/':
             methods.discard('DELETE')
         return methods
 

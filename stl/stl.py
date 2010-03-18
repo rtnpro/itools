@@ -50,9 +50,6 @@ class STLError(StandardError):
     pass
 
 
-ERR_EXPR_XML = 'expected XML stream not "%s" in "${%s}" expression'
-
-
 
 ########################################################################
 # Expressions
@@ -243,7 +240,9 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             elif value_type in (list, GeneratorType, XMLParser):
                 for x in value:
                     if type(x) is not tuple:
-                        raise STLError, ERR_EXPR_XML % (type(x), segment)
+                        err = ('bad XML stream in "${%s}" expression, '
+                               'expected tuple found %s')
+                        raise STLError, err % (segment, type(x))
                     yield x
             else:
                 yield TEXT, str(value), 0
